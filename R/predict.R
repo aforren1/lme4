@@ -796,8 +796,8 @@ rinvgauss <- function(n, mu, lambda) {
 inverse.gaussian_simfun <- function(object, nsim, ftd = fitted(object),
                                     wts = weights(object)) {
     if (any(wts != 1)) message("using weights as inverse variances")
-    lme4:::rinvgauss(nsim * length(ftd), mu = ftd, 
-                     lambda = wts/(sigma(object)^2))
+    rinvgauss(nsim * length(ftd), mu = ftd, 
+              lambda = wts/(sigma(object)^2))
 }
 
 ## in the original MASS version, .Theta is assigned into the environment
