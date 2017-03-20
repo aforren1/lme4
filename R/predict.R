@@ -784,6 +784,22 @@ gamma.shape.merMod <- function(object, ...) {
 ##                          lambda = wts/summary(object)$dispersion)
 ## }
 
+rinvgauss <- function(n, mu, lambda) {
+    # transcribed from https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution
+    nu <- rnorm(n)
+    y <- nu^2
+    x <- mu + (mu^2 * y)/(2*lambda) - (mu/(2*lambda)) * sqrt(4*mu*lambda*y + mu^2*y^2)
+    z <- runif(n)
+    ifelse(z <= mu/(mu + x), x, mu^2/x)
+}
+
+inverse.gaussian_simfun <- function(object, nsim, ftd = fitted(object),
+                                    wts = weights(object)) {
+    if (any(wts != 1)) message("using weights as inverse variances")
+    lme4:::rinvgauss(nsim * length(ftd), mu = ftd, 
+                     lambda = wts/(sigma(object)^2))
+}
+
 ## in the original MASS version, .Theta is assigned into the environment
 ## (triggers a NOTE in R CMD check)
 ## modified from @aosmith16 GH contribution
@@ -803,4 +819,5 @@ simfunList <- list(gaussian = gaussian_simfun,
 		   binomial = binomial_simfun,
 		   poisson  = poisson_simfun,
 		   Gamma    = Gamma_simfun,
-		   negative.binomial = negative.binomial_simfun)
+		   negative.binomial = negative.binomial_simfun,
+		   inverse.gaussian = inverse.gaussian_simfun)
