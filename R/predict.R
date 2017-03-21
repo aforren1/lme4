@@ -796,8 +796,11 @@ rinvgauss <- function(n, mu, lambda) {
 inverse.gaussian_simfun <- function(object, nsim, ftd = fitted(object),
                                     wts = weights(object)) {
     if (any(wts != 1)) message("using weights as inverse variances")
+    dispersion <- sum((weights(object, 'working') * 
+             residuals(object, 'working')^2)[weights(object, 'working')>0])/
+        (df.residual(object))
     rinvgauss(nsim * length(ftd), mu = ftd, 
-              lambda = wts/(sigma(object)^2))
+              lambda = wts/dispersion)
 }
 
 ## in the original MASS version, .Theta is assigned into the environment
